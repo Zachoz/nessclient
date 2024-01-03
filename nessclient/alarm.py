@@ -11,6 +11,7 @@ class ArmingState(Enum):
     ARMING = "ARMING"
     EXIT_DELAY = "EXIT_DELAY"
     ARMED = "ARMED"
+    ARMED_MONITOR = "ARMED_MONITOR"
     ENTRY_DELAY = "ENTRY_DELAY"
     TRIGGERED = "TRIGGERED"
 
@@ -69,6 +70,8 @@ class Alarm:
     def _handle_arming_update(self, update: ArmingUpdate) -> None:
         if update.status == [ArmingUpdate.ArmingStatus.AREA_1_ARMED]:
             return self._update_arming_state(ArmingState.EXIT_DELAY)
+        if (ArmingUpdate.ArmingStatus.MONITOR_ARMED in update.status):
+            return self._update_arming_state(ArmingState.ARMED_MONITOR)
         if (
             ArmingUpdate.ArmingStatus.AREA_1_ARMED in update.status
             and ArmingUpdate.ArmingStatus.AREA_1_FULLY_ARMED in update.status
