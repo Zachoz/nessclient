@@ -62,7 +62,7 @@ class Client:
         return await self.send_command(command)
 
     async def panic(self, code: str) -> None:
-        command = "*{}#".format(code)
+        command = "{}P".format(code)
         return await self.send_command(command)
 
     async def aux(self, output_id: int, state: bool = True) -> None:
