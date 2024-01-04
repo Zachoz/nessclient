@@ -72,6 +72,19 @@ class Alarm:
             return self._update_arming_state(ArmingState.EXIT_DELAY)
         if (ArmingUpdate.ArmingStatus.MONITOR_ARMED in update.status):
             return self._update_arming_state(ArmingState.ARMED_MONITOR)
+        if self.arming_state == ArmingState.TRIGGERED:
+            # If the current ArmingState is TRIGGERED, then don't update the state
+            # based on the output of the arming status command. The problem is that
+            # the arming status does not return the fact an alarm panic is currently
+            # occurring. However the panic event is processed and the ArmingState is
+            # set to TRIGGERED accordingly. The ALARM_RESTORE event will be processed
+            # when the alarm is disarmed and will set the state to ARMED if it is
+            # anything other than DISARMED. This may not represent the actual arming
+            # state of the panel following the processing of the event, however a
+            # subsequent arming status check will correct the state. This isn't ideal
+            # and a proper fix would involve adding tracking of the previous state in
+            # the event processing to accurately restore the arming state
+            return self._update_arming_state(ArmingState.TRIGGERED)
         if (
             ArmingUpdate.ArmingStatus.AREA_1_ARMED in update.status
             and ArmingUpdate.ArmingStatus.AREA_1_FULLY_ARMED in update.status
